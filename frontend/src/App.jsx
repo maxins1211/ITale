@@ -6,13 +6,18 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import CreateBlogForm from './components/CreateBlogForm'
 import Togglable from './components/Togglable'
+import { useDispatch } from 'react-redux'
+import {
+  setNotification,
+  clearNotification,
+} from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState(null)
+  const dispatch = useDispatch()
   useEffect(() => {
     const fetchBlogs = async () => {
       if (user) {
@@ -39,11 +44,18 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-      setMessage({ content: 'Login successfully', isError: false })
-      setTimeout(() => setMessage(null), 3000)
+      dispatch(
+        setNotification({ content: 'Login successfully', isError: false }),
+      )
+      setTimeout(() => dispatch(clearNotification()), 3000)
     } catch (exception) {
-      setMessage({ content: 'Wrong username or password', isError: true })
-      setTimeout(() => setMessage(null), 3000)
+      dispatch(
+        setNotification({
+          content: 'Wrong username or password',
+          isError: true,
+        }),
+      )
+      setTimeout(() => dispatch(clearNotification()), 3000)
     }
   }
 
@@ -56,11 +68,13 @@ const App = () => {
     const addedBlog = await blogService.addBlog(blogObject)
     const newBlogs = blogs.concat(addedBlog)
     setBlogs(newBlogs)
-    setMessage({
-      content: `a new blog ${blogObject.title} added`,
-      isError: false,
-    })
-    setTimeout(() => setMessage(null), 3000)
+    dispatch(
+      setNotification({
+        content: `a new blog ${blogObject.title} added`,
+        isError: false,
+      }),
+    )
+    setTimeout(() => dispatch(clearNotification()), 3000)
   }
 
   const addLike = async (id, blogObject) => {
@@ -76,7 +90,7 @@ const App = () => {
   return (
     <div>
       {!user ? <h2>Log in to application</h2> : <h2>blogs</h2>}
-      <Notification message={message} />
+      <Notification />
       {!user && (
         <LoginForm
           username={username}
