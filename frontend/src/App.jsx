@@ -11,12 +11,11 @@ import {
   setNotification,
   clearNotification,
 } from './reducers/notificationReducer'
-
+import { useSelector } from 'react-redux'
+import { loginUser, logoutUser } from './reducers/userReducer'
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -31,37 +30,14 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(loginUser(user))
       blogService.setToken(user.token)
     }
   }, [])
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    try {
-      const user = await loginService.login({ username, password })
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-      dispatch(
-        setNotification({ content: 'Login successfully', isError: false }),
-      )
-      setTimeout(() => dispatch(clearNotification()), 3000)
-    } catch (exception) {
-      dispatch(
-        setNotification({
-          content: 'Wrong username or password',
-          isError: true,
-        }),
-      )
-      setTimeout(() => dispatch(clearNotification()), 3000)
-    }
-  }
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
+    dispatch(logoutUser())
   }
 
   const addBlog = async (blogObject) => {
@@ -91,15 +67,7 @@ const App = () => {
     <div>
       {!user ? <h2>Log in to application</h2> : <h2>blogs</h2>}
       <Notification />
-      {!user && (
-        <LoginForm
-          username={username}
-          handleLogin={handleLogin}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
-        />
-      )}
+      {!user && <LoginForm />}
 
       {user && (
         <div>
