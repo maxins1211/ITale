@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-import loginService from './services/login'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import CreateBlogForm from './components/CreateBlogForm'
@@ -13,19 +12,38 @@ import {
 } from './reducers/notificationReducer'
 import { useSelector } from 'react-redux'
 import { loginUser, logoutUser } from './reducers/userReducer'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      if (user) {
-        const newBlogs = await blogService.getAll()
-        setBlogs(newBlogs.sort((a, b) => b.likes - a.likes))
-      }
-    }
-    fetchBlogs()
-  }, [user])
+  const queryClient = useQueryClient()
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.addBlog,
+    onSuccess: (data, variables) => {
+      const blogs = queryClient.getQueryData(['blogs'])
+      queryClient.setQueryData(['blogs'], blogs.concat(data))
+      dispatch(
+        setNotification({
+          content: `a new blog ${variables.title} added`,
+          isError: false,
+        }),
+      )
+      setTimeout(() => dispatch(clearNotification()), 3000)
+    },
+  })
+
+  const updateBlogMutation = useMutation({
+    mutationFn: blogService.increaseLike,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+  })
+  const deleteBlogMutation = useMutation({
+    mutationFn: blogService.deleteBlog,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] })
+    },
+  })
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
@@ -34,6 +52,14 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['blogs'],
+    queryFn: async () => {
+      const blogs = await blogService.getAll()
+      return blogs.sort((a, b) => b.likes - a.likes)
+    },
+    enabled: !!user,
+  })
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
@@ -41,28 +67,17 @@ const App = () => {
   }
 
   const addBlog = async (blogObject) => {
-    const addedBlog = await blogService.addBlog(blogObject)
-    const newBlogs = blogs.concat(addedBlog)
-    setBlogs(newBlogs)
-    dispatch(
-      setNotification({
-        content: `a new blog ${blogObject.title} added`,
-        isError: false,
-      }),
-    )
-    setTimeout(() => dispatch(clearNotification()), 3000)
+    newBlogMutation.mutate(blogObject)
   }
 
   const addLike = async (id, blogObject) => {
-    const modifiedBlog = await blogService.increaseLike(id, blogObject)
-    const newBlogs = blogs.map((blog) => (blog.id === id ? modifiedBlog : blog))
-    setBlogs(newBlogs.sort((a, b) => b.likes - a.likes))
+    updateBlogMutation.mutate({ id, blogObject })
   }
 
   const deleteBlog = async (id) => {
-    await blogService.deleteBlog(id)
-    setBlogs(blogs.filter((blog) => blog.id !== id))
+    deleteBlogMutation.mutate(id)
   }
+  const blogs = data
   return (
     <div>
       {!user ? <h2>Log in to application</h2> : <h2>blogs</h2>}
@@ -81,15 +96,16 @@ const App = () => {
             <CreateBlogForm createBlog={addBlog} />
           </Togglable>
 
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              increaseLike={addLike}
-              removeBlog={deleteBlog}
-              currentUser={user}
-            />
-          ))}
+          {blogs &&
+            blogs.map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                increaseLike={addLike}
+                removeBlog={deleteBlog}
+                currentUser={user}
+              />
+            ))}
         </div>
       )}
     </div>
