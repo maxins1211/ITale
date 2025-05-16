@@ -30,6 +30,8 @@ blogsRouter.delete("/:id", middleware.userExtractor, async (request, response) =
     if (blog.user.toString() === user._id.toString()) {
         await Blog.findByIdAndDelete(id);
         response.status(204).end()
+        user.blogs = user.blogs.filter(blogId => blogId.toString() !== id);
+        await user.save();
     }
     else {
         response.status(401).json({ error: "this blog doesn't belong to this user" })
