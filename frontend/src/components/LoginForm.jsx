@@ -1,4 +1,3 @@
-import React from 'react'
 import loginService from '../services/login'
 import blogService from '../services/blogs'
 import { useState } from 'react'
@@ -8,10 +7,12 @@ import {
   clearNotification,
   setNotification,
 } from '../reducers/notificationReducer'
+import { useNavigate } from 'react-router-dom'
 const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
@@ -25,6 +26,7 @@ const LoginForm = () => {
         setNotification({ content: 'Login successfully', isError: false }),
       )
       setTimeout(() => dispatch(clearNotification()), 3000)
+      navigate('/')
     } catch (exception) {
       dispatch(
         setNotification({
