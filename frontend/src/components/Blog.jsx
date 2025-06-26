@@ -39,7 +39,7 @@ const Blog = ({ blog, increaseLike, removeBlog, currentUser }) => {
         <span data-testid="number-of-like">likes {blog.likes}</span>{' '}
         <button onClick={addLike}>like</button> <br />
         {blog.user.name} <br />
-        {currentUser.name === blog.user.name && (
+        {currentUser && currentUser.name === blog.user.name && (
           <button onClick={deleteBlog}>remove</button>
         )}
       </div>
