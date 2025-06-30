@@ -18,7 +18,7 @@ blogsRouter.get("/:id", async (request, response) => {
     }
 });
 
-blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
+blogsRouter.post("/", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
     const { body, user } = request;
     const blog = new Blog({
         title: body.title,
@@ -34,7 +34,7 @@ blogsRouter.post("/", middleware.userExtractor, async (request, response) => {
     response.status(201).json(addedBlog);
 });
 
-blogsRouter.delete("/:id", middleware.userExtractor, async (request, response) => {
+blogsRouter.delete("/:id", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
     const user = request.user;
     const id = request.params.id
     const blog = await Blog.findById(id);
@@ -49,12 +49,18 @@ blogsRouter.delete("/:id", middleware.userExtractor, async (request, response) =
     }
 })
 
-blogsRouter.put("/:id", async (request, response) => {
+blogsRouter.put("/:id", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
     const id = request.params.id
-    const { user, likes, author, url, title } = request.body;
+    const { likes, author, url, title } = request.body;
+    const authenticatedUser = request.user;
     const blog = await Blog.findById(id);
-    if (!blog || blog.user.toString() !== user) {
-        response.status(404).end()
+
+    if (!blog) {
+        return response.status(404).json({ error: 'Blog not found' })
+    }
+
+    if (blog.user.toString() !== authenticatedUser._id.toString()) {
+        return response.status(403).json({ error: 'Access denied - you can only update your own blogs' })
     }
     blog.likes = likes
     blog.author = author
@@ -64,7 +70,21 @@ blogsRouter.put("/:id", async (request, response) => {
     response.status(200).json(updatedBlog)
 })
 
-// Get all comments for a specific blog
+blogsRouter.put("/:id/like", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
+    const id = request.params.id
+    const blog = await Blog.findById(id);
+
+    if (!blog) {
+        return response.status(404).json({ error: 'Blog not found' })
+    }
+
+    blog.likes = blog.likes + 1
+    await blog.save()
+
+    const updatedBlog = await Blog.findById(id).populate("user", { username: 1, name: 1, id: 1 })
+    response.status(200).json(updatedBlog)
+})
+
 blogsRouter.get("/:id/comments", async (request, response) => {
     const blogId = request.params.id
     const comments = await Comment.find({ blog: blogId })
@@ -73,7 +93,6 @@ blogsRouter.get("/:id/comments", async (request, response) => {
     response.json(comments)
 })
 
-// Add a comment to a specific blog
 blogsRouter.post("/:id/comments", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
     const { content } = request.body
     const user = request.user
