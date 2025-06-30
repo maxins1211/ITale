@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const Blog = ({ blog, increaseLike, removeBlog, currentUser }) => {
   const [visible, setVisible] = useState(false)
@@ -31,7 +32,7 @@ const Blog = ({ blog, increaseLike, removeBlog, currentUser }) => {
   return (
     <div className="blog" style={blogStyle}>
       <div className="blog-header">
-        {blog.title} {blog.author}{' '}
+        <Link to={`/blogs/${blog.id}`}>{blog.title}</Link> {blog.author}{' '}
         <button onClick={changeVisibility}>{visible ? 'hide' : 'view'}</button>
       </div>
       <div className="blog-body" style={showWhenVisible}>
