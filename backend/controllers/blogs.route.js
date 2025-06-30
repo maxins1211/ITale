@@ -33,7 +33,7 @@ blogsRouter.post("/", middleware.tokenExtractor, middleware.userExtractor, async
     const blog = new Blog({
         title: body.title,
         author: body.author,
-        url: body.url,
+        content: body.content,
         likes: body.likes || 0,
         user: user.id,
         comments: []
@@ -70,7 +70,7 @@ blogsRouter.delete("/:id", middleware.tokenExtractor, middleware.userExtractor, 
 
 blogsRouter.put("/:id", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
     const id = request.params.id
-    const { likes, author, url, title } = request.body;
+    const { likes, author, content, title } = request.body;
     const authenticatedUser = request.user;
     const blog = await Blog.findById(id);
 
@@ -83,9 +83,9 @@ blogsRouter.put("/:id", middleware.tokenExtractor, middleware.userExtractor, asy
     }
     blog.likes = likes
     blog.author = author
-    blog.url = url
+    blog.content = content
     blog.title = title
-    const updatedBlog = await Blog.findByIdAndUpdate(id, { likes, author, url, title }, { new: true })
+    const updatedBlog = await Blog.findByIdAndUpdate(id, { likes, author, content, title }, { new: true })
         .populate("user", { username: 1, name: 1, id: 1 })
         .populate({
             path: "comments",
