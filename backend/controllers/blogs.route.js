@@ -4,13 +4,23 @@ const Comment = require("../models/comment");
 const middleware = require('../utils/middleware')
 
 blogsRouter.get("/", async (request, response) => {
-    const blogs = await Blog.find({}).populate("user", { username: 1, name: 1, id: 1 });
+    const blogs = await Blog.find({})
+        .populate("user", { username: 1, name: 1, id: 1 })
+        .populate({
+            path: "comments",
+            populate: { path: "user", select: "username name id" }
+        });
     response.json(blogs);
 });
 
 blogsRouter.get("/:id", async (request, response) => {
     const id = request.params.id
-    const blog = await Blog.findById(id).populate("user", { username: 1, name: 1, id: 1 });
+    const blog = await Blog.findById(id)
+        .populate("user", { username: 1, name: 1, id: 1 })
+        .populate({
+            path: "comments",
+            populate: { path: "user", select: "username name id" }
+        });
     if (blog) {
         response.json(blog);
     } else {
@@ -25,12 +35,18 @@ blogsRouter.post("/", middleware.tokenExtractor, middleware.userExtractor, async
         author: body.author,
         url: body.url,
         likes: body.likes || 0,
-        user: user.id
+        user: user.id,
+        comments: []
     });
     const savedBlog = await blog.save();
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
-    const addedBlog = await Blog.findById(savedBlog._id).populate("user", { username: 1, name: 1, id: 1 })
+    const addedBlog = await Blog.findById(savedBlog._id)
+        .populate("user", { username: 1, name: 1, id: 1 })
+        .populate({
+            path: "comments",
+            populate: { path: "user", select: "username name id" }
+        })
     response.status(201).json(addedBlog);
 });
 
@@ -39,6 +55,9 @@ blogsRouter.delete("/:id", middleware.tokenExtractor, middleware.userExtractor, 
     const id = request.params.id
     const blog = await Blog.findById(id);
     if (blog.user.toString() === user._id.toString()) {
+        // Delete all comments associated with this blog
+        await Comment.deleteMany({ blog: id });
+
         await Blog.findByIdAndDelete(id);
         response.status(204).end()
         user.blogs = user.blogs.filter(blogId => blogId.toString() !== id);
@@ -66,7 +85,12 @@ blogsRouter.put("/:id", middleware.tokenExtractor, middleware.userExtractor, asy
     blog.author = author
     blog.url = url
     blog.title = title
-    const updatedBlog = await Blog.findByIdAndUpdate(id, { likes, author, url, title }, { new: true }).populate("user", { username: 1, name: 1, id: 1 })
+    const updatedBlog = await Blog.findByIdAndUpdate(id, { likes, author, url, title }, { new: true })
+        .populate("user", { username: 1, name: 1, id: 1 })
+        .populate({
+            path: "comments",
+            populate: { path: "user", select: "username name id" }
+        })
     response.status(200).json(updatedBlog)
 })
 
@@ -81,7 +105,12 @@ blogsRouter.put("/:id/like", middleware.tokenExtractor, middleware.userExtractor
     blog.likes = blog.likes + 1
     await blog.save()
 
-    const updatedBlog = await Blog.findById(id).populate("user", { username: 1, name: 1, id: 1 })
+    const updatedBlog = await Blog.findById(id)
+        .populate("user", { username: 1, name: 1, id: 1 })
+        .populate({
+            path: "comments",
+            populate: { path: "user", select: "username name id" }
+        })
     response.status(200).json(updatedBlog)
 })
 
@@ -114,10 +143,65 @@ blogsRouter.post("/:id/comments", middleware.tokenExtractor, middleware.userExtr
     })
 
     const savedComment = await comment.save()
+
+    // Add comment to blog's comments array
+    blog.comments = blog.comments.concat(savedComment._id)
+    await blog.save()
+
     const populatedComment = await Comment.findById(savedComment._id)
         .populate("user", { username: 1, name: 1, id: 1 })
 
     response.status(201).json(populatedComment)
 })
 
+blogsRouter.put("/comments/:commentId", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
+    const { content } = request.body
+    const user = request.user
+    const commentId = request.params.commentId
+
+    const comment = await Comment.findById(commentId)
+    if (!comment) {
+        return response.status(404).json({ error: 'Comment not found' })
+    }
+
+    if (comment.user.toString() !== user._id.toString()) {
+        return response.status(403).json({ error: 'You can only edit your own comments' })
+    }
+
+    if (!content || content.trim().length === 0) {
+        return response.status(400).json({ error: 'Comment content is required' })
+    }
+
+    comment.content = content.trim()
+    const updatedComment = await comment.save()
+    const populatedComment = await Comment.findById(updatedComment._id)
+        .populate("user", { username: 1, name: 1, id: 1 })
+
+    response.json(populatedComment)
+})
+
+// Delete a comment
+blogsRouter.delete("/comments/:commentId", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
+    const user = request.user
+    const commentId = request.params.commentId
+
+    const comment = await Comment.findById(commentId)
+    if (!comment) {
+        return response.status(404).json({ error: 'Comment not found' })
+    }
+
+    if (comment.user.toString() !== user._id.toString()) {
+        return response.status(403).json({ error: 'You can only delete your own comments' })
+    }
+
+    // Remove comment from blog's comments array
+    const blog = await Blog.findById(comment.blog)
+    if (blog) {
+        blog.comments = blog.comments.filter(commentId => commentId.toString() !== request.params.commentId)
+        await blog.save()
+    }
+
+    await Comment.findByIdAndDelete(commentId)
+    response.status(204).end()
+})
 module.exports = blogsRouter;
