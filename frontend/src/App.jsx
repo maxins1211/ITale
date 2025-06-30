@@ -1,10 +1,25 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { loginUser } from './reducers/userReducer'
+import blogService from './services/blogs'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import SingleBlog from './pages/SingleBlog'
 
 const App = () => {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      dispatch(loginUser(user))
+      blogService.setToken(user.token)
+    }
+  }, [dispatch])
+
   const padding = {
     padding: 5,
   }

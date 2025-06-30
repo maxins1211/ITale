@@ -43,14 +43,7 @@ const Home = () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
     },
   })
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      dispatch(loginUser(user))
-      blogService.setToken(user.token)
-    }
-  }, [])
+
   const { data, isLoading, error } = useQuery({
     queryKey: ['blogs'],
     queryFn: async () => {
