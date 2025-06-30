@@ -39,7 +39,7 @@ test.only("a valid blog can be added", async () => {
     const newBlog = {
         title: "Go To Statement Considered Harmful 2",
         author: "Edsger W. Dijkstra",
-        url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+        content: "<p>An extension of the classic paper on goto statements.</p>",
         likes: 6,
     };
     await api
@@ -63,7 +63,7 @@ test.only("adding blog without token will be denied", async () => {
     const newBlog = {
         title: "Go To Statement Considered Harmful 2",
         author: "Edsger W. Dijkstra",
-        url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+        content: "<p>An extension of the classic paper on goto statements.</p>",
         likes: 6,
     };
     await api
@@ -79,7 +79,7 @@ test("when the likes property is missing, it will default to the value 0", async
     const newBlog = {
         title: "Go To Statement Considered Harmful 2",
         author: "Edsger W. Dijkstra",
-        url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+        content: "<p>An extension of the classic paper on goto statements.</p>",
     };
     await api
         .post("/api/blogs")
@@ -92,10 +92,10 @@ test("when the likes property is missing, it will default to the value 0", async
     assert.strictEqual(addedBlog.likes, 0);
 });
 
-test("blog without title or url is not added", async () => {
+test("blog without title or content is not added", async () => {
     const newBlogWithoutTitle = {
         author: "Edsger W. Dijkstra",
-        url: "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
+        content: "<p>An extension of the classic paper on goto statements.</p>",
     };
     await api
         .post("/api/blogs")
@@ -103,13 +103,13 @@ test("blog without title or url is not added", async () => {
         .expect(400)
         .expect("Content-Type", /application\/json/);
 
-    const newBlogWithoutUrl = {
+    const newBlogWithoutContent = {
         title: "Go To Statement Considered Harmful 2",
         author: "Edsger W. Dijkstra",
     };
     await api
         .post("/api/blogs")
-        .send(newBlogWithoutUrl)
+        .send(newBlogWithoutContent)
         .expect(400)
         .expect("Content-Type", /application\/json/);
 });

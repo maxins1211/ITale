@@ -9,7 +9,7 @@ describe('<Blog />', () => {
   beforeEach(() => {
     const blog = {
       title: 'not a real title',
-      url: 'not a real url',
+      content: '<p>not a real content</p>',
       author: 'not a real author',
       likes: 6,
       user: { name: 'Lam' },
