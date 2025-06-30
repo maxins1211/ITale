@@ -50,28 +50,6 @@ const CreateBlogForm = (props) => {
             onChange={(content) => setNewBlog({ ...newBlog, content })}
             data-testid="blog-content"
             style={{ marginTop: '5px' }}
-            modules={{
-              toolbar: [
-                [{ header: [1, 2, 3, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ list: 'ordered' }, { list: 'bullet' }],
-                ['blockquote', 'code-block'],
-                ['link'],
-                ['clean'],
-              ],
-            }}
-            formats={[
-              'header',
-              'bold',
-              'italic',
-              'underline',
-              'strike',
-              'list',
-              'bullet',
-              'blockquote',
-              'code-block',
-              'link',
-            ]}
           />
         </div>
 
