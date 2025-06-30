@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
+import SingleBlog from './pages/SingleBlog'
+
 const App = () => {
   const padding = {
     padding: 5,
@@ -23,6 +25,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/blogs/:id" element={<SingleBlog />} />
       </Routes>
     </Router>
   )
