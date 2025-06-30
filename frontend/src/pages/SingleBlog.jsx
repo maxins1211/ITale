@@ -136,12 +136,19 @@ const SingleBlog = () => {
       <p>
         <strong>Author:</strong> {blog.author}
       </p>
-      <p>
-        <strong>URL:</strong>{' '}
-        <a href={blog.url} target="_blank" rel="noopener noreferrer">
-          {blog.url}
-        </a>
-      </p>
+      <div style={{ marginBottom: '15px' }}>
+        <strong>Content:</strong>
+        <div
+          style={{
+            marginTop: '10px',
+            padding: '10px',
+            border: '1px solid #ccc',
+            borderRadius: '5px',
+            minHeight: '100px',
+          }}
+          dangerouslySetInnerHTML={{ __html: blog.content }}
+        />
+      </div>
       <p>
         <strong>Likes:</strong> {blog.likes}
         {user && (
