@@ -1,9 +1,8 @@
 import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Blog from '../components/Blog'
 import blogService from '../services/blogs'
 import Notification from '../components/Notification'
-import CreateBlogForm from '../components/CreateBlogForm'
-import Togglable from '../components/Togglable'
 import { useDispatch } from 'react-redux'
 import {
   setNotification,
@@ -16,20 +15,6 @@ const Home = () => {
   const user = useSelector((state) => state.user)
   const dispatch = useDispatch()
   const queryClient = useQueryClient()
-  const newBlogMutation = useMutation({
-    mutationFn: blogService.addBlog,
-    onSuccess: (data, variables) => {
-      const blogs = queryClient.getQueryData(['blogs'])
-      queryClient.setQueryData(['blogs'], blogs.concat(data))
-      dispatch(
-        setNotification({
-          content: `a new blog ${variables.title} added`,
-          isError: false,
-        }),
-      )
-      setTimeout(() => dispatch(clearNotification()), 3000)
-    },
-  })
 
   const updateBlogMutation = useMutation({
     mutationFn: blogService.increaseLike,
@@ -58,10 +43,6 @@ const Home = () => {
     dispatch(logoutUser())
   }
 
-  const addBlog = async (blogObject) => {
-    newBlogMutation.mutate(blogObject)
-  }
-
   const addLike = async (id, blogObject) => {
     updateBlogMutation.mutate({ id, blogObject })
   }
@@ -76,14 +57,13 @@ const Home = () => {
       {user && (
         <div>
           <div>
-            {' '}
             <span>{user.name} logged in</span>
             <button onClick={handleLogout}>log out</button>
           </div>
           <br />
-          <Togglable buttonLabel="new blog">
-            <CreateBlogForm createBlog={addBlog} />
-          </Togglable>
+          <Link to="/create-blog">
+            <button>Create New Blog</button>
+          </Link>
         </div>
       )}
       <div>
