@@ -30,7 +30,15 @@ const Blog = ({ blog, increaseLike, removeBlog, currentUser }) => {
         <button onClick={changeVisibility}>{visible ? 'hide' : 'view'}</button>
       </div>
       <div className="blog-body" style={showWhenVisible}>
-        {blog.url} <br />
+        <div
+          style={{
+            marginBottom: '10px',
+            maxHeight: '100px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+          dangerouslySetInnerHTML={{ __html: blog.content }}
+        />
         <span data-testid="number-of-like">likes {blog.likes}</span>{' '}
         {currentUser && increaseLike && <button onClick={addLike}>like</button>}{' '}
         <br />
