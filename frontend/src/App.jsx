@@ -36,7 +36,7 @@ const App = () => {
         <Link style={padding} to="/signup">
           SignUp
         </Link>
-        <Link style={padding} to="/create">
+        <Link style={padding} to="/create-blog">
           Create Blog
         </Link>
       </div>
