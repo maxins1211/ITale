@@ -40,11 +40,12 @@ const Home = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
+    blogService.setToken(null)
     dispatch(logoutUser())
   }
 
-  const addLike = async (id, blogObject) => {
-    updateBlogMutation.mutate({ id, blogObject })
+  const addLike = async (id) => {
+    updateBlogMutation.mutate(id)
   }
 
   const deleteBlog = async (id) => {
