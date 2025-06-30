@@ -15,13 +15,7 @@ const Blog = ({ blog, increaseLike, removeBlog, currentUser }) => {
     marginBottom: 5,
   }
   const addLike = () => {
-    increaseLike(blog.id, {
-      user: blog.user.id,
-      author: blog.author,
-      title: blog.title,
-      url: blog.url,
-      likes: ++blog.likes,
-    })
+    increaseLike(blog.id)
   }
 
   const deleteBlog = () => {
@@ -38,7 +32,8 @@ const Blog = ({ blog, increaseLike, removeBlog, currentUser }) => {
       <div className="blog-body" style={showWhenVisible}>
         {blog.url} <br />
         <span data-testid="number-of-like">likes {blog.likes}</span>{' '}
-        <button onClick={addLike}>like</button> <br />
+        {currentUser && increaseLike && <button onClick={addLike}>like</button>}{' '}
+        <br />
         {blog.user.name} <br />
         {currentUser && currentUser.name === blog.user.name && (
           <button onClick={deleteBlog}>remove</button>

@@ -26,12 +26,12 @@ const addBlog = async (blogObject) => {
   return request.data
 }
 
-const increaseLike = async (id, blogObject) => {
+const increaseLike = async (id) => {
   const config = {
     headers: { Authorization: token },
   }
-  const url = baseUrl + `/${id}`
-  const request = await axios.put(url, blogObject, config)
+  const url = baseUrl + `/${id}/like`
+  const request = await axios.put(url, {}, config)
   return request.data
 }
 
@@ -57,4 +57,20 @@ const addComment = async (blogId, content) => {
   return request.data
 }
 
-export default { getAll, getById, setToken, addBlog, increaseLike, deleteBlog, getComments, addComment }
+const updateComment = async (commentId, content) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = await axios.put(`${baseUrl}/comments/${commentId}`, { content }, config)
+  return request.data
+}
+
+const deleteComment = async (commentId) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+  const request = await axios.delete(`${baseUrl}/comments/${commentId}`, config)
+  return request.data
+}
+
+export default { getAll, getById, setToken, addBlog, increaseLike, deleteBlog, getComments, addComment, updateComment, deleteComment }
