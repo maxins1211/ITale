@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import SingleBlog from './pages/SingleBlog'
 import CreateBlog from './pages/CreateBlog'
+import EditBlog from './pages/EditBlog'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -46,6 +47,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />} />
         <Route path="/blogs/:id" element={<SingleBlog />} />
         <Route path="/create-blog" element={<CreateBlog />} />
+        <Route path="/blogs/:id/edit" element={<EditBlog />} />
       </Routes>
     </Router>
   )
