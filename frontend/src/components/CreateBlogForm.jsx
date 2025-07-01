@@ -3,13 +3,28 @@ import { useState } from 'react'
 import PropTypes from 'prop-types'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
+import ImageUpload from './ImageUpload'
+
 const CreateBlogForm = (props) => {
   const { createBlog } = props
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', content: '' })
+  const [newBlog, setNewBlog] = useState({
+    title: '',
+    content: '',
+    coverImage: '',
+  })
+
+  const handleImageUpload = (imageUrl) => {
+    setNewBlog({ ...newBlog, coverImage: imageUrl })
+  }
+
   const addBlog = (e) => {
     e.preventDefault()
-    createBlog(newBlog)
-    setNewBlog({ title: '', author: '', content: '' })
+    createBlog({
+      title: newBlog.title,
+      content: newBlog.content,
+      coverImage: newBlog.coverImage,
+    })
+    setNewBlog({ title: '', content: '', coverImage: '' })
   }
   return (
     <div>
@@ -29,19 +44,7 @@ const CreateBlogForm = (props) => {
           />
         </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label>Author:</label>
-          <input
-            type="text"
-            value={newBlog.author}
-            data-testid="blog-author"
-            onChange={(e) => {
-              setNewBlog({ ...newBlog, author: e.target.value })
-            }}
-            style={{ width: '100%', padding: '5px', marginTop: '5px' }}
-            required
-          />
-        </div>
+        <ImageUpload onUploadComplete={handleImageUpload} />
 
         <div style={{ marginBottom: '10px' }}>
           <label>Content:</label>
@@ -50,6 +53,7 @@ const CreateBlogForm = (props) => {
             onChange={(content) => setNewBlog({ ...newBlog, content })}
             data-testid="blog-content"
             style={{ marginTop: '5px' }}
+            theme="snow"
           />
         </div>
 
