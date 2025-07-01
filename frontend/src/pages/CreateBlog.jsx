@@ -9,7 +9,6 @@ import {
   setNotification,
   clearNotification,
 } from '../reducers/notificationReducer'
-
 const CreateBlog = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -23,11 +22,11 @@ const CreateBlog = () => {
 
   const newBlogMutation = useMutation({
     mutationFn: blogService.addBlog,
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
       dispatch(
         setNotification({
-          content: `A new blog "${variables.title}" added`,
+          content: `A new blog "${data.title}" added`,
           isError: false,
         }),
       )

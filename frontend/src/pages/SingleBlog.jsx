@@ -134,8 +134,22 @@ const SingleBlog = () => {
     <div>
       <h2>{blog.title}</h2>
       <p>
-        <strong>Author:</strong> {blog.author}
+        <strong>Author:</strong> {blog.user?.name}
       </p>
+      {blog.coverImage && (
+        <div style={{ marginBottom: '15px' }}>
+          <img
+            src={blog.coverImage}
+            alt="Blog cover"
+            style={{
+              width: '100%',
+              maxHeight: '300px',
+              objectFit: 'cover',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
+      )}
       <div style={{ marginBottom: '15px' }}>
         <strong>Content:</strong>
         <div
