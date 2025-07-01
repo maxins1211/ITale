@@ -2,6 +2,13 @@ const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const Comment = require("../models/comment");
 const middleware = require('../utils/middleware')
+const imagekit = require('../utils/imagekit')
+
+// ImageKit upload authentication endpoint. Reference: ImageKit.io documentation
+blogsRouter.get("/upload-auth", async (request, response) => {
+    const { token, expire, signature } = imagekit.getAuthenticationParameters();
+    response.send({ token, expire, signature, publicKey: process.env.IMAGEKIT_PUBLIC_KEY });
+})
 
 blogsRouter.get("/", async (request, response) => {
     const blogs = await Blog.find({})
@@ -30,10 +37,13 @@ blogsRouter.get("/:id", async (request, response) => {
 
 blogsRouter.post("/", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
     const { body, user } = request;
+
+    // With direct upload, frontend sends the ImageKit URL directly
     const blog = new Blog({
         title: body.title,
-        author: body.author,
+        author: user.name,
         content: body.content,
+        coverImage: body.coverImage || null, // ImageKit URL from frontend
         likes: body.likes || 0,
         user: user.id,
         comments: []
@@ -70,7 +80,7 @@ blogsRouter.delete("/:id", middleware.tokenExtractor, middleware.userExtractor, 
 
 blogsRouter.put("/:id", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
     const id = request.params.id
-    const { likes, author, content, title } = request.body;
+    const { likes, content, title, coverImage } = request.body; // Now expects coverImage URL from frontend
     const authenticatedUser = request.user;
     const blog = await Blog.findById(id);
 
@@ -81,11 +91,14 @@ blogsRouter.put("/:id", middleware.tokenExtractor, middleware.userExtractor, asy
     if (blog.user.toString() !== authenticatedUser._id.toString()) {
         return response.status(403).json({ error: 'Access denied - you can only update your own blogs' })
     }
-    blog.likes = likes
-    blog.author = author
-    blog.content = content
-    blog.title = title
-    const updatedBlog = await Blog.findByIdAndUpdate(id, { likes, author, content, title }, { new: true })
+
+    // Update blog fields
+    const updatedBlog = await Blog.findByIdAndUpdate(id, {
+        likes,
+        content,
+        title,
+        coverImage: coverImage || blog.coverImage // Use new URL or keep existing
+    }, { new: true })
         .populate("user", { username: 1, name: 1, id: 1 })
         .populate({
             path: "comments",
