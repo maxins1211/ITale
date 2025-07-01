@@ -1,3 +1,155 @@
+@import 'tailwindcss';
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+/* Default styles for elements without classes */
+button:not([class]) {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:not([class]):hover {
+  background-color: #e0e0e0;
+}
+
+a:not([class]) {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+a:not([class]):hover {
+  color: #0052a3;
+}
+
+a:not([class]):visited {
+  color: #6b46c1;
+}
+
+input:not([class]) {
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+input:not([class]):focus {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+/* Additional styles for your existing components */
+.blog-header button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.blog-header button:hover {
+  background-color: #0056b3;
+}
+
+.blog-header a {
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.blog-header a:hover {
+  text-decoration: underline;
+  color: #0052a3;
+}
+
+/* Ensure blog-box class still works */
+.blog-box {
+  border-radius: 3px;
+  border: black 1px solid;
+  padding: 5px;
+  margin: 5px;
+}
+
+/* Style for any forms you might have */
+form:not([class]) input {
+  margin: 5px 0;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+form:not([class]) button {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 5px 0;
+}
+
+form:not([class]) button:hover {
+  background-color: #218838;
+}
+
 .message {
   color: green;
   background: lightgrey;
@@ -15,11 +167,4 @@
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
-}
-
-.blog-box {
-  border-radius: 3px;
-  border: black 1px solid;
-  padding: 5px;
-  margin: 5px;
 }
