@@ -18,11 +18,14 @@ const getById = async (id) => {
   return request.data
 }
 
-const addBlog = async (blogObject) => {
+const addBlog = async (blogData) => {
   const config = {
-    headers: { Authorization: token },
+    headers: {
+      Authorization: token,
+      'Content-Type': 'application/json'
+    },
   }
-  const request = await axios.post(baseUrl, blogObject, config)
+  const request = await axios.post(baseUrl, blogData, config)
   return request.data
 }
 
@@ -50,6 +53,18 @@ const updateBlog = async (id, blogData) => {
   }
   const url = baseUrl + `/${id}`
   const request = await axios.put(url, blogData, config)
+  return request.data
+}
+
+const updateBlogWithImage = async (id, formData) => {
+  const config = {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'multipart/form-data'
+    },
+  }
+  const url = baseUrl + `/${id}`
+  const request = await axios.put(url, formData, config)
   return request.data
 }
 
@@ -82,4 +97,4 @@ const deleteComment = async (commentId) => {
   return request.data
 }
 
-export default { getAll, getById, setToken, addBlog, increaseLike, deleteBlog, updateBlog, getComments, addComment, updateComment, deleteComment }
+export default { getAll, getById, setToken, addBlog, increaseLike, deleteBlog, updateBlog, updateBlogWithImage, getComments, addComment, updateComment, deleteComment }
