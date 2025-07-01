@@ -10,7 +10,6 @@ describe('<Blog />', () => {
     const blog = {
       title: 'not a real title',
       content: '<p>not a real content</p>',
-      author: 'not a real author',
       likes: 6,
       user: { name: 'Lam' },
     }
@@ -24,7 +23,7 @@ describe('<Blog />', () => {
 
   test('initially renders only title and author', () => {
     const element = container.querySelector('.blog-header')
-    expect(element).toHaveTextContent('not a real title not a real author view')
+    expect(element).toHaveTextContent('not a real title by Lam view')
     const body = container.querySelector('.blog-body')
     expect(body).toHaveStyle('display: none')
   })
