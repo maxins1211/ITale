@@ -12,7 +12,8 @@
     "test": "cross-env  NODE_ENV=test node --test",
     "lint": "eslint .",
     "start:test": "NODE_ENV=test node index.js",
-    "build:ui": "rm -rf dist && cd ../frontend/ && npm run build && cp -r dist ../backend"
+    "build:ui": "rm -rf dist && cd ../frontend/ && npm run build && cp -r dist ../backend",
+    "build:ui:prod": "rm -rf dist && cd ../frontend/ && npm run build -- --mode production && cp -r dist ../backend"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -20,10 +21,10 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-async-errors": "^3.1.1",
+    "imagekit": "^6.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.2",
-    "morgan": "^1.10.0",
-    "multer": "^2.0.1"
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "supertest": "^7.1.0"
