@@ -3,8 +3,9 @@ const mongoose = require('mongoose')
 
 const blogSchema = mongoose.Schema({
     title: { type: String, required: true },
-    author: String,
+    author: { type: String, required: true }, // Keep author field but auto-populate
     content: { type: String, required: true },
+    coverImage: { type: String }, // URL/path to the cover image
     likes: Number,
     user: {
         type: mongoose.Schema.Types.ObjectId,
