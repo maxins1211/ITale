@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 import Notification from '../components/Notification'
+import ImageUpload from '../components/ImageUpload'
 import blogService from '../services/blogs'
 import {
   setNotification,
@@ -19,8 +20,9 @@ const EditBlog = () => {
   const queryClient = useQueryClient()
 
   const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
   const [content, setContent] = useState('')
+  const [newCoverImage, setNewCoverImage] = useState('')
+  const [currentCoverImage, setCurrentCoverImage] = useState('')
 
   // Fetch the blog to edit
   const {
@@ -37,8 +39,8 @@ const EditBlog = () => {
   useEffect(() => {
     if (blog) {
       setTitle(blog.title || '')
-      setAuthor(blog.author || '')
       setContent(blog.content || '')
+      setCurrentCoverImage(blog.coverImage || '')
     }
   }, [blog])
 
@@ -81,13 +83,17 @@ const EditBlog = () => {
     },
   })
 
+  const handleImageUpload = (imageUrl) => {
+    setNewCoverImage(imageUrl)
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
 
-    if (!title.trim() || !author.trim() || !content.trim()) {
+    if (!title.trim() || !content.trim()) {
       dispatch(
         setNotification({
-          content: 'All fields are required',
+          content: 'Title and content are required',
           isError: true,
         }),
       )
@@ -95,14 +101,16 @@ const EditBlog = () => {
       return
     }
 
+    const blogData = {
+      title: title.trim(),
+      content: content.trim(),
+      likes: blog.likes,
+      coverImage: newCoverImage || currentCoverImage, // Use new image or keep current
+    }
+
     updateBlogMutation.mutate({
       id,
-      blogData: {
-        title: title.trim(),
-        author: author.trim(),
-        content: content.trim(),
-        likes: blog.likes, // Keep current likes
-      },
+      blogData,
     })
   }
 
@@ -129,16 +137,22 @@ const EditBlog = () => {
         </div>
 
         <div style={{ marginBottom: '10px' }}>
-          <label>
-            Author:
-            <input
-              type="text"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              required
-              style={{ width: '100%', padding: '5px', marginTop: '5px' }}
-            />
-          </label>
+          <label>Upload New Cover Image:</label>
+          <ImageUpload onUploadComplete={handleImageUpload} />
+          {currentCoverImage && !newCoverImage && (
+            <div style={{ marginTop: '10px' }}>
+              <p>Current cover image:</p>
+              <img
+                src={currentCoverImage}
+                alt="Current cover"
+                style={{
+                  maxWidth: '200px',
+                  maxHeight: '150px',
+                  objectFit: 'cover',
+                }}
+              />
+            </div>
+          )}
         </div>
 
         <div style={{ marginBottom: '10px' }}>
@@ -148,6 +162,7 @@ const EditBlog = () => {
               value={content}
               onChange={setContent}
               style={{ marginTop: '5px' }}
+              theme="snow"
             />
           </label>
         </div>
