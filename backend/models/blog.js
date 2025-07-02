@@ -15,6 +15,8 @@ const blogSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
     }]
+}, {
+    timestamps: true
 })
 
 blogSchema.set('toJSON', {
