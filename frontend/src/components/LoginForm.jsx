@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { loginUser } from '../reducers/userReducer'
 import {
-  clearNotification,
-  setNotification,
-} from '../reducers/notificationReducer'
+  showSuccessNotification,
+  showErrorNotification,
+} from '../utils/notifications'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,23 +26,14 @@ const LoginForm = () => {
       dispatch(loginUser(user))
       setUsername('')
       setPassword('')
-      dispatch(
-        setNotification({ content: 'Login successfully', isError: false }),
-      )
-      setTimeout(() => dispatch(clearNotification()), 3000)
+      showSuccessNotification('Login successfully!')
       navigate('/')
     } catch (exception) {
-      dispatch(
-        setNotification({
-          content: 'Wrong username or password',
-          isError: true,
-        }),
-      )
-      setTimeout(() => dispatch(clearNotification()), 3000)
+      showErrorNotification('Wrong username or password')
     }
   }
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>

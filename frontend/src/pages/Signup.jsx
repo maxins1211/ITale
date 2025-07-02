@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Notification from '../components/Notification'
-import { useDispatch } from 'react-redux'
 import {
-  setNotification,
-  clearNotification,
-} from '../reducers/notificationReducer'
+  showSuccessNotification,
+  showErrorNotification,
+} from '../utils/notifications'
 import userService from '../services/users'
 
 const Signup = () => {
@@ -16,7 +14,6 @@ const Signup = () => {
   const [passwordsMatch, setPasswordsMatch] = useState(true)
 
   const navigate = useNavigate()
-  const dispatch = useDispatch()
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value)
@@ -32,42 +29,23 @@ const Signup = () => {
     e.preventDefault()
 
     if (password !== confirmPassword) {
-      dispatch(
-        setNotification({
-          content: 'Passwords do not match',
-          isError: true,
-        }),
-      )
-      setTimeout(() => dispatch(clearNotification()), 3000)
+      showErrorNotification('Passwords do not match')
       return
     }
 
     try {
       const user = await userService.signup({ username, name, password })
       if (user) {
-        dispatch(
-          setNotification({
-            content: 'Sign up successful! Please log in.',
-            isError: false,
-          }),
-        )
-        setTimeout(() => dispatch(clearNotification()), 3000)
+        showSuccessNotification('Sign up successful! Please log in.')
         navigate('/login')
       }
     } catch (exception) {
-      dispatch(
-        setNotification({
-          content: exception.response?.data?.error || 'Sign up failed',
-          isError: true,
-        }),
-      )
-      setTimeout(() => dispatch(clearNotification()), 3000)
+      showErrorNotification(exception.response?.data?.error || 'Sign up failed')
     }
   }
 
   return (
     <div>
-      <Notification />
       <h1>Signup</h1>
       <form onSubmit={handleSignup}>
         <label>name</label>{' '}
