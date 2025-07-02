@@ -49,10 +49,16 @@ const CreateBlog = () => {
   }
 
   return (
-    <div>
-      <Notification />
-      <h2>Create New Blog</h2>
-      <CreateBlogForm createBlog={addBlog} />
+    <div className="min-h-[calc(100vh-8rem)]">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
+        <Notification />
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-foreground mb-8">
+            Create New Blog
+          </h1>
+          <CreateBlogForm createBlog={addBlog} />
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,8 +1,22 @@
 import React, { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import blogService from '../services/blogs'
+import { formatTimeAgo, formatDate } from '../utils/dateUtils'
+import { Button } from '../components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Badge } from '../components/ui/badge'
+import { Avatar, AvatarFallback } from '../components/ui/avatar'
+import {
+  Heart,
+  Edit,
+  Trash2,
+  MessageCircle,
+  Calendar,
+  User,
+  ArrowLeft,
+} from 'lucide-react'
 
 const SingleBlog = () => {
   const { id } = useParams()
@@ -126,201 +140,362 @@ const SingleBlog = () => {
     setEditContent('')
   }
 
-  if (isLoading) return <div>Loading blog...</div>
-  if (error) return <div>Error loading blog: {error.message}</div>
-  if (!blog) return <div>Blog not found</div>
+  if (isLoading)
+    return (
+      <div className="min-h-[calc(100vh-4rem)]">
+        <div className="container mx-auto max-w-6xl px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-lg text-muted-foreground">
+                Loading blog...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+
+  if (error)
+    return (
+      <div className="min-h-[calc(100vh-4rem)]">
+        <div className="container mx-auto max-w-6xl px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center text-red-600">
+                  Error loading blog: {error.message}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
+
+  if (!blog)
+    return (
+      <div className="min-h-[calc(100vh-4rem)]">
+        <div className="container mx-auto max-w-6xl px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center text-muted-foreground">
+                  Blog not found
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
 
   return (
-    <div>
-      <h2>{blog.title}</h2>
-      <p>
-        <strong>Author:</strong> {blog.user?.name}
-      </p>
-      {blog.coverImage && (
-        <div style={{ marginBottom: '15px' }}>
-          <img
-            src={blog.coverImage}
-            alt="Blog cover"
-            style={{
-              width: '100%',
-              maxHeight: '300px',
-              objectFit: 'cover',
-              borderRadius: '8px',
-            }}
-          />
-        </div>
-      )}
-      <div style={{ marginBottom: '15px' }}>
-        <strong>Content:</strong>
-        <div
-          style={{
-            marginTop: '10px',
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '5px',
-            minHeight: '100px',
-          }}
-          dangerouslySetInnerHTML={{ __html: blog.content }}
-        />
-      </div>
-      <p>
-        <strong>Likes:</strong> {blog.likes}
-        {user && (
-          <button
-            onClick={handleLikeBlog}
-            disabled={likeBlogMutation.isPending}
-            style={{ marginLeft: '10px' }}
+    <div className="min-h-[calc(100vh-4rem)]">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* Back Button */}
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="mb-4"
           >
-            {likeBlogMutation.isPending ? 'Liking...' : '👍 Like'}
-          </button>
-        )}
-      </p>
-      <p>
-        <strong>Added by:</strong> {blog.user?.name}
-      </p>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Stories
+          </Button>
 
-      {/* Blog Author Controls */}
-      {user && user.username === blog.user.username && (
-        <div style={{ marginTop: '15px', marginBottom: '15px' }}>
-          <button
-            onClick={() => navigate(`/blogs/${id}/edit`)}
-            style={{ marginRight: '10px' }}
-          >
-            Edit Blog
-          </button>
-          <button
-            onClick={handleDeleteBlog}
-            disabled={deleteBlogMutation.isPending}
-            style={{ color: 'red', marginRight: '10px' }}
-          >
-            {deleteBlogMutation.isPending ? 'Deleting...' : 'Delete Blog'}
-          </button>
-        </div>
-      )}
+          {/* Blog Content Card - Combined */}
+          <Card>
+            <CardContent className="p-8">
+              <div className="space-y-6">
+                {/* Blog Title */}
+                <h1 className="text-4xl font-bold text-foreground leading-tight">
+                  {blog.title}
+                </h1>
 
-      {/* Comments Section */}
-      <div style={{ marginTop: '30px' }}>
-        <h3>Comments</h3>
+                {/* Author and Date Info */}
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center space-x-4">
+                    <Avatar>
+                      <AvatarFallback>
+                        {blog.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold text-foreground">
+                        {blog.user?.name}
+                      </p>
+                      <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
+                        <span title={formatDate(blog.createdAt)}>
+                          {formatTimeAgo(blog.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-        {/* Add Comment Form */}
-        {user ? (
-          <form onSubmit={handleAddComment} style={{ marginBottom: '20px' }}>
-            <div>
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write a comment..."
-                rows="3"
-                style={{ width: '100%', marginBottom: '10px' }}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={!newComment.trim() || addCommentMutation.isPending}
-            >
-              {addCommentMutation.isPending ? 'Adding...' : 'Add Comment'}
-            </button>
-          </form>
-        ) : (
-          <p>Please log in to comment</p>
-        )}
+                  {/* Blog Stats */}
+                  <div className="flex items-center space-x-4">
+                    <Badge
+                      variant="secondary"
+                      className="flex items-center space-x-1"
+                    >
+                      <Heart className="w-4 h-4" />
+                      <span>{blog.likes || 0}</span>
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="flex items-center space-x-1"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>{blogComments.length}</span>
+                    </Badge>
+                  </div>
+                </div>
 
-        {/* Comments List */}
-        {isCommentsLoading ? (
-          <p>Loading comments...</p>
-        ) : (
-          <div>
-            {blogComments.length === 0 ? (
-              <p>No comments yet</p>
-            ) : (
-              blogComments.map((comment) => {
-                return (
+                {/* Blog Author Controls */}
+                {user && user.username === blog.user.username && (
+                  <div className="flex space-x-3 pt-4 border-t">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/blogs/${id}/edit`)}
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Blog
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={handleDeleteBlog}
+                      disabled={deleteBlogMutation.isPending}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      {deleteBlogMutation.isPending
+                        ? 'Deleting...'
+                        : 'Delete Blog'}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Cover Image */}
+                {blog.coverImage && (
+                  <div className="pt-4">
+                    <img
+                      src={blog.coverImage}
+                      alt="Blog cover"
+                      className="w-full h-64 md:h-80 object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+
+                {/* Blog Content */}
+                <div className="pt-4">
                   <div
-                    key={comment.id}
-                    style={{
-                      border: '1px solid #ccc',
-                      padding: '10px',
-                      marginBottom: '10px',
-                      borderRadius: '5px',
-                    }}
+                    className="prose prose-lg max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: blog.content }}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Comments and Like Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <MessageCircle className="w-5 h-5" />
+                  <span>Comments ({blogComments.length})</span>
+                </div>
+                {/* Like Button */}
+                {user ? (
+                  <Button
+                    onClick={handleLikeBlog}
+                    disabled={likeBlogMutation.isPending}
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center space-x-2"
                   >
-                    {editingComment === comment.id ? (
-                      // Edit form
-                      <form
-                        onSubmit={handleUpdateComment}
-                        style={{ marginTop: '10px' }}
+                    <Heart className="w-4 h-4" />
+                    <span>
+                      {likeBlogMutation.isPending
+                        ? 'Liking...'
+                        : `${blog.likes || 0}`}
+                    </span>
+                  </Button>
+                ) : (
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center space-x-1"
+                  >
+                    <Heart className="w-4 h-4" />
+                    <span>{blog.likes || 0}</span>
+                  </Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Add Comment Form */}
+              {user ? (
+                <form onSubmit={handleAddComment} className="space-y-4">
+                  <div>
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Write a comment..."
+                      rows="3"
+                      className="w-full p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={
+                      !newComment.trim() || addCommentMutation.isPending
+                    }
+                    size="sm"
+                  >
+                    {addCommentMutation.isPending ? 'Adding...' : 'Add Comment'}
+                  </Button>
+                </form>
+              ) : (
+                <Card>
+                  <CardContent className="p-4">
+                    <p className="text-center text-muted-foreground">
+                      Please{' '}
+                      <Link
+                        to="/login"
+                        className="text-primary hover:underline font-medium"
                       >
-                        <textarea
-                          value={editContent}
-                          onChange={(e) => setEditContent(e.target.value)}
-                          rows="3"
-                          style={{ width: '100%', marginBottom: '10px' }}
-                        />
-                        <button
-                          type="submit"
-                          disabled={
-                            !editContent.trim() ||
-                            updateCommentMutation.isPending
-                          }
-                        >
-                          {updateCommentMutation.isPending
-                            ? 'Updating...'
-                            : 'Update'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={cancelEdit}
-                          style={{ marginLeft: '10px' }}
-                        >
-                          Cancel
-                        </button>
-                      </form>
-                    ) : (
-                      // Display comment
-                      <div>
-                        <p>{comment.content}</p>
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <small>
-                            By {comment.user.name} on{' '}
-                            {new Date(comment.createdAt).toLocaleDateString()}
-                          </small>
-                          {user && user.username === comment.user.username && (
-                            <div>
-                              <button
-                                onClick={() => handleEditComment(comment)}
-                                style={{
-                                  marginRight: '10px',
-                                  fontSize: '12px',
-                                }}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDeleteComment(comment.id)}
-                                disabled={deleteCommentMutation.isPending}
-                                style={{ fontSize: '12px', color: 'red' }}
-                              >
-                                {deleteCommentMutation.isPending
-                                  ? 'Deleting...'
-                                  : 'Delete'}
-                              </button>
+                        log in
+                      </Link>{' '}
+                      to comment or like this post.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Comments List */}
+              {isCommentsLoading ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground">Loading comments...</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {blogComments.length === 0 ? (
+                    <Card>
+                      <CardContent className="p-6">
+                        <p className="text-center text-muted-foreground">
+                          No comments yet. Be the first to comment!
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    blogComments.map((comment) => (
+                      <Card key={comment.id}>
+                        <CardContent className="p-4">
+                          {editingComment === comment.id ? (
+                            // Edit form
+                            <form
+                              onSubmit={handleUpdateComment}
+                              className="space-y-3"
+                            >
+                              <textarea
+                                value={editContent}
+                                onChange={(e) => setEditContent(e.target.value)}
+                                rows="3"
+                                className="w-full p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                              />
+                              <div className="flex space-x-2">
+                                <Button
+                                  type="submit"
+                                  disabled={
+                                    !editContent.trim() ||
+                                    updateCommentMutation.isPending
+                                  }
+                                  size="sm"
+                                >
+                                  {updateCommentMutation.isPending
+                                    ? 'Updating...'
+                                    : 'Update'}
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={cancelEdit}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </form>
+                          ) : (
+                            // Display comment
+                            <div className="space-y-3">
+                              <p className="text-foreground">
+                                {comment.content}
+                              </p>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  <Avatar className="w-6 h-6">
+                                    <AvatarFallback className="text-xs">
+                                      {comment.user.name
+                                        ?.charAt(0)
+                                        ?.toUpperCase() || 'U'}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div className="text-sm text-muted-foreground">
+                                    <span className="font-medium">
+                                      {comment.user.name}
+                                    </span>
+                                    <span className="mx-1">•</span>
+                                    <span title={formatDate(comment.createdAt)}>
+                                      {formatTimeAgo(comment.createdAt)}
+                                    </span>
+                                  </div>
+                                </div>
+                                {user &&
+                                  user.username === comment.user.username && (
+                                    <div className="flex space-x-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleEditComment(comment)
+                                        }
+                                      >
+                                        <Edit className="w-3 h-3 mr-1" />
+                                        Edit
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleDeleteComment(comment.id)
+                                        }
+                                        disabled={
+                                          deleteCommentMutation.isPending
+                                        }
+                                        className="text-red-600 hover:text-red-700"
+                                      >
+                                        <Trash2 className="w-3 h-3 mr-1" />
+                                        {deleteCommentMutation.isPending
+                                          ? 'Deleting...'
+                                          : 'Delete'}
+                                      </Button>
+                                    </div>
+                                  )}
+                              </div>
                             </div>
                           )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )
-              })
-            )}
-          </div>
-        )}
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

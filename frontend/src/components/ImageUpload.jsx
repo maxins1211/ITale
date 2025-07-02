@@ -7,6 +7,8 @@ import {
   upload,
 } from '@imagekit/react'
 import { useRef, useState } from 'react'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
 
 const ImageUpload = ({ onUploadComplete, onUploadError }) => {
   const [progress, setProgress] = useState(0)
@@ -89,44 +91,50 @@ const ImageUpload = ({ onUploadComplete, onUploadError }) => {
   }
 
   return (
-    <div style={{ marginBottom: '10px' }}>
-      <label>Cover Image:</label>
-      <input
-        type="file"
-        ref={fileInputRef}
-        accept="image/*"
-        onChange={handleFileChange}
-        disabled={uploading}
-        style={{ width: '100%', padding: '5px', marginTop: '5px' }}
-      />
-
-      <button
-        type="button"
-        onClick={handleUpload}
-        disabled={uploading}
-        style={{ marginTop: '5px' }}
-      >
-        {uploading ? 'Uploading...' : 'Upload Image'}
-      </button>
+    <div className="space-y-4">
+      <div className="flex items-center space-x-3">
+        <Input
+          type="file"
+          ref={fileInputRef}
+          accept="image/*"
+          onChange={handleFileChange}
+          disabled={uploading}
+          className="flex-1"
+        />
+        <Button
+          type="button"
+          onClick={handleUpload}
+          disabled={uploading}
+          variant="outline"
+          size="sm"
+        >
+          {uploading ? 'Uploading...' : 'Upload'}
+        </Button>
+      </div>
 
       {uploading && (
-        <div style={{ marginTop: '5px' }}>
-          Upload progress: <progress value={progress} max={100}></progress>{' '}
-          {Math.round(progress)}%
+        <div className="space-y-2">
+          <div className="w-full bg-secondary rounded-full h-2">
+            <div
+              className="bg-primary h-2 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Upload progress: {Math.round(progress)}%
+          </p>
         </div>
       )}
 
       {uploadedImageUrl && (
-        <div style={{ marginTop: '10px' }}>
-          <p>✅ Image uploaded successfully!</p>
+        <div className="space-y-2">
+          <p className="text-sm text-green-600 font-medium">
+            ✅ Image uploaded successfully!
+          </p>
           <img
             src={uploadedImageUrl}
             alt="Uploaded preview"
-            style={{
-              maxWidth: '200px',
-              maxHeight: '150px',
-              objectFit: 'cover',
-            }}
+            className="max-w-sm h-32 object-cover rounded-md border"
           />
         </div>
       )}

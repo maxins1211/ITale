@@ -4,6 +4,10 @@ import PropTypes from 'prop-types'
 import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 import ImageUpload from './ImageUpload'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Card, CardContent } from './ui/card'
 
 const CreateBlogForm = (props) => {
   const { createBlog } = props
@@ -27,44 +31,59 @@ const CreateBlogForm = (props) => {
     setNewBlog({ title: '', content: '', coverImage: '' })
   }
   return (
-    <div>
-      <h2>Create new</h2>
-      <form action="" onSubmit={addBlog}>
-        <div style={{ marginBottom: '10px' }}>
-          <label>Title:</label>
-          <input
-            type="text"
-            value={newBlog.title}
-            data-testid="blog-title"
-            onChange={(e) => {
-              setNewBlog({ ...newBlog, title: e.target.value })
-            }}
-            style={{ width: '100%', padding: '5px', marginTop: '5px' }}
-            required
-          />
-        </div>
+    <Card>
+      <CardContent className="p-6">
+        <form onSubmit={addBlog} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              type="text"
+              value={newBlog.title}
+              data-testid="blog-title"
+              onChange={(e) => {
+                setNewBlog({ ...newBlog, title: e.target.value })
+              }}
+              placeholder="Enter your blog title..."
+              className="w-full"
+              required
+            />
+          </div>
 
-        <ImageUpload onUploadComplete={handleImageUpload} />
+          <div className="space-y-2">
+            <Label>Cover Image</Label>
+            <ImageUpload onUploadComplete={handleImageUpload} />
+          </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label>Content:</label>
-          <ReactQuill
-            value={newBlog.content}
-            onChange={(content) => setNewBlog({ ...newBlog, content })}
-            data-testid="blog-content"
-            style={{ marginTop: '5px' }}
-            theme="snow"
-          />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="content">Content</Label>
+            <div className="prose-editor">
+              <ReactQuill
+                value={newBlog.content}
+                onChange={(content) => setNewBlog({ ...newBlog, content })}
+                data-testid="blog-content"
+                theme="snow"
+                placeholder="Share your story..."
+                className="bg-background"
+              />
+            </div>
+          </div>
 
-        <button
-          type="submit"
-          style={{ marginTop: '10px', padding: '10px 20px' }}
-        >
-          Create
-        </button>
-      </form>
-    </div>
+          <div className="flex justify-end space-x-4 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.history.back()}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" className="bg-primary hover:bg-primary/90">
+              Create Blog
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
 

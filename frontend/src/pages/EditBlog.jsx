@@ -6,6 +6,10 @@ import ReactQuill from 'react-quill-new'
 import 'react-quill-new/dist/quill.snow.css'
 import Notification from '../components/Notification'
 import ImageUpload from '../components/ImageUpload'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import blogService from '../services/blogs'
 import {
   setNotification,
@@ -114,72 +118,130 @@ const EditBlog = () => {
     })
   }
 
-  if (isLoading) return <div>Loading blog...</div>
-  if (error) return <div>Error loading blog: {error.message}</div>
-  if (!blog) return <div>Blog not found</div>
+  if (isLoading)
+    return (
+      <div className="min-h-[calc(100vh-8rem)]">
+        <div className="container mx-auto max-w-6xl px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-lg text-muted-foreground">
+                Loading blog...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+
+  if (error)
+    return (
+      <div className="min-h-[calc(100vh-8rem)]">
+        <div className="container mx-auto max-w-6xl px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center text-red-600">
+                  Error loading blog: {error.message}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
+
+  if (!blog)
+    return (
+      <div className="min-h-[calc(100vh-8rem)]">
+        <div className="container mx-auto max-w-6xl px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <Card>
+              <CardContent className="p-6">
+                <div className="text-center text-muted-foreground">
+                  Blog not found
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    )
 
   return (
-    <div>
-      <Notification />
-      <h2>Edit Blog</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            Title:
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              style={{ width: '100%', padding: '5px', marginTop: '5px' }}
-            />
-          </label>
-        </div>
+    <div className="min-h-[calc(100vh-8rem)]">
+      <div className="container mx-auto max-w-6xl px-4 py-8">
+        <Notification />
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-foreground mb-8">Edit Blog</h1>
+          <Card>
+            <CardContent className="p-6">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title</Label>
+                  <Input
+                    id="title"
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter your blog title..."
+                    className="w-full"
+                    required
+                  />
+                </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label>Upload New Cover Image:</label>
-          <ImageUpload onUploadComplete={handleImageUpload} />
-          {currentCoverImage && !newCoverImage && (
-            <div style={{ marginTop: '10px' }}>
-              <p>Current cover image:</p>
-              <img
-                src={currentCoverImage}
-                alt="Current cover"
-                style={{
-                  maxWidth: '200px',
-                  maxHeight: '150px',
-                  objectFit: 'cover',
-                }}
-              />
-            </div>
-          )}
-        </div>
+                <div className="space-y-2">
+                  <Label>Cover Image</Label>
+                  <ImageUpload onUploadComplete={handleImageUpload} />
+                  {currentCoverImage && !newCoverImage && (
+                    <div className="mt-4">
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Current cover image:
+                      </p>
+                      <img
+                        src={currentCoverImage}
+                        alt="Current cover"
+                        className="max-w-sm h-32 object-cover rounded-md border"
+                      />
+                    </div>
+                  )}
+                </div>
 
-        <div style={{ marginBottom: '10px' }}>
-          <label>
-            Content:
-            <ReactQuill
-              value={content}
-              onChange={setContent}
-              style={{ marginTop: '5px' }}
-              theme="snow"
-            />
-          </label>
-        </div>
+                <div className="space-y-2">
+                  <Label htmlFor="content">Content</Label>
+                  <div className="prose-editor">
+                    <ReactQuill
+                      value={content}
+                      onChange={setContent}
+                      theme="snow"
+                      placeholder="Share your story..."
+                      className="bg-background"
+                    />
+                  </div>
+                </div>
 
-        <div style={{ marginTop: '20px' }}>
-          <button
-            type="submit"
-            disabled={updateBlogMutation.isPending}
-            style={{ marginRight: '10px' }}
-          >
-            {updateBlogMutation.isPending ? 'Updating...' : 'Update Blog'}
-          </button>
-          <button type="button" onClick={() => navigate(`/blogs/${id}`)}>
-            Cancel
-          </button>
+                <div className="flex justify-end space-x-4 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate(`/blogs/${id}`)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={updateBlogMutation.isPending}
+                    className="bg-primary hover:bg-primary/90"
+                  >
+                    {updateBlogMutation.isPending
+                      ? 'Updating...'
+                      : 'Update Blog'}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
         </div>
-      </form>
+      </div>
     </div>
   )
 }
