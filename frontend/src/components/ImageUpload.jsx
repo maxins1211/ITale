@@ -134,7 +134,7 @@ const ImageUpload = ({ onUploadComplete, onUploadError }) => {
           <img
             src={uploadedImageUrl}
             alt="Uploaded preview"
-            className="max-w-sm h-32 object-cover rounded-md border"
+            className="max-w-sm h-32 object-cover border"
           />
         </div>
       )}

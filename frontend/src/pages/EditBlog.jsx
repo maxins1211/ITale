@@ -200,7 +200,7 @@ const EditBlog = () => {
                       <img
                         src={currentCoverImage}
                         alt="Current cover"
-                        className="max-w-sm h-32 object-cover rounded-md border"
+                        className="max-w-sm h-32 object-cover border"
                       />
                     </div>
                   )}

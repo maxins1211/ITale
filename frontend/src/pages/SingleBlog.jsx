@@ -283,7 +283,7 @@ const SingleBlog = () => {
                     <img
                       src={blog.coverImage}
                       alt="Blog cover"
-                      className="w-full h-64 md:h-80 object-cover rounded-lg"
+                      className="w-full h-64 md:h-80 object-cover"
                     />
                   </div>
                 )}

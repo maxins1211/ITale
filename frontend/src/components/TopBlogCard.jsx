@@ -9,9 +9,9 @@ import {
 
 const TopBlogCard = ({ blog, rank }) => {
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card border-border overflow-hidden relative h-96">
+    <Card className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card border-border overflow-hidden relative h-96 rounded-none">
       {/* Rank Badge */}
-      <div className="absolute top-3 left-3 z-10 flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground rounded-full text-sm font-bold shadow-md">
+      <div className="absolute top-3 left-3 z-10 flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground text-sm font-bold shadow-md">
         {rank}
       </div>
 

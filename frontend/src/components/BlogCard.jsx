@@ -30,7 +30,7 @@ const BlogCard = ({ blog, size = 'default' }) => {
 
   return (
     <Card
-      className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card border-border ${cardSizeClasses[size]} overflow-hidden`}
+      className={`group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card border-border ${cardSizeClasses[size]} overflow-hidden rounded-none`}
     >
       <Link to={`/blogs/${blog.id}`} className="block h-full">
         <div className="flex h-full">

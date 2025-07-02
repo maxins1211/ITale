@@ -10,11 +10,11 @@ import {
 const CompactBlogCard = ({ blog, rank }) => {
   return (
     <Card
-      className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card border-border overflow-hidden relative"
+      className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-card border-border overflow-hidden relative rounded-none"
       style={{ height: 'calc((24rem - 2rem) / 3)' }}
     >
       {/* Rank Badge */}
-      <div className="absolute top-2 left-2 z-10 flex items-center justify-center w-6 h-6 bg-secondary text-secondary-foreground rounded-full text-xs font-bold shadow-sm">
+      <div className="absolute top-2 left-2 z-10 flex items-center justify-center w-6 h-6 bg-secondary text-secondary-foreground text-xs font-bold shadow-sm">
         {rank}
       </div>
 
