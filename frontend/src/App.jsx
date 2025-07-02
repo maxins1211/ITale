@@ -7,6 +7,8 @@ import { loginUser } from './reducers/userReducer'
 import blogService from './services/blogs'
 import { ThemeProvider, useTheme } from './components/theme-provider'
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
+import ScrollToTop from './components/ScrollToTop'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
@@ -30,9 +32,10 @@ const AppContent = () => {
 
   return (
     <Router>
-      <div className="min-h-screen bg-background text-foreground transition-colors">
+      <ScrollToTop />
+      <div className="min-h-screen bg-background text-foreground transition-colors flex flex-col">
         <Navbar />
-        <main className="container mx-auto px-4 py-8">
+        <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -42,6 +45,7 @@ const AppContent = () => {
             <Route path="/blogs/:id/edit" element={<EditBlog />} />
           </Routes>
         </main>
+        <Footer />
         <ToastContainer
           position="top-right"
           autoClose={5000}
