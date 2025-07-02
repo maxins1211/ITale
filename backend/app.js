@@ -11,15 +11,14 @@ const logger = require("./utils/logger");
 const middleware = require("./utils/middleware")
 const app = express();
 
-// Serve static files from the React app build directory
-app.use(express.static(path.join(__dirname, '../frontend/dist')))
+app.use(express.static(path.join(__dirname, 'dist')))
 
 // Handle client-side routing - serve index.html for non-API routes
 app.get('*', (request, response, next) => {
     if (request.path.startsWith('/api/')) {
         return next() // Let API routes handle themselves
     }
-    response.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'))
+    response.sendFile(path.join(__dirname, 'dist', 'index.html'))
 })
 
 mongoose
