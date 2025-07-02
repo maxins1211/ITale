@@ -2,12 +2,12 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Blog from '../components/Blog'
 import blogService from '../services/blogs'
-import Notification from '../components/Notification'
-import { useDispatch } from 'react-redux'
+import { Button } from '../components/ui/button'
 import {
-  setNotification,
-  clearNotification,
-} from '../reducers/notificationReducer'
+  showSuccessNotification,
+  showErrorNotification,
+} from '../utils/notifications'
+import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { loginUser, logoutUser } from '../reducers/userReducer'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -38,12 +38,6 @@ const Home = () => {
     // enabled: !!user,
   })
 
-  const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogappUser')
-    blogService.setToken(null)
-    dispatch(logoutUser())
-  }
-
   const addLike = async (id) => {
     updateBlogMutation.mutate(id)
   }
@@ -54,16 +48,13 @@ const Home = () => {
   const blogs = data
   return (
     <div>
-      <Notification />
       {user && (
-        <div>
-          <div>
-            <span>{user.name} logged in</span>
-            <button onClick={handleLogout}>log out</button>
-          </div>
-          <br />
+        <div className="mb-6 flex justify-between items-center">
+          <p className="text-gray-600 dark:text-gray-400">
+            Welcome back, {user.name}!
+          </p>
           <Link to="/create-blog">
-            <button>Create New Blog</button>
+            <Button>Create New Blog</Button>
           </Link>
         </div>
       )}
