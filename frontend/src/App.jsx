@@ -15,6 +15,7 @@ import Signup from './pages/Signup'
 import SingleBlog from './pages/SingleBlog'
 import CreateBlog from './pages/CreateBlog'
 import EditBlog from './pages/EditBlog'
+import AdminPanel from './pages/AdminPanel'
 
 // Component to access theme inside the provider
 const AppContent = () => {
@@ -43,6 +44,7 @@ const AppContent = () => {
             <Route path="/blogs/:id" element={<SingleBlog />} />
             <Route path="/create-blog" element={<CreateBlog />} />
             <Route path="/blogs/:id/edit" element={<EditBlog />} />
+            <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </main>
         <Footer />
