@@ -79,6 +79,140 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Subtle background pattern for the entire application */
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      hsl(var(--muted)) 1px,
+      transparent 0
+    );
+    background-size: 20px 20px;
+  }
+
+  /* Override background for specific sections that need solid colors */
+  .hero-section {
+    background:
+      linear-gradient(
+        135deg,
+        hsl(var(--primary) / 0.05) 0%,
+        hsl(var(--secondary) / 0.08) 100%
+      ),
+      radial-gradient(
+        circle at 20% 50%,
+        hsl(var(--primary) / 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 20%,
+        hsl(var(--accent) / 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 40% 80%,
+        hsl(var(--secondary) / 0.1) 0%,
+        transparent 50%
+      );
+  }
+
+  /* Modern geometric background for hero visual element */
+  .hero-visual {
+    background:
+      linear-gradient(
+        45deg,
+        hsl(var(--primary) / 0.1),
+        hsl(var(--secondary) / 0.1)
+      ),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000' fill-opacity='0.05'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='37' cy='7' r='1'/%3E%3Ccircle cx='22' cy='22' r='1'/%3E%3Ccircle cx='52' cy='22' r='1'/%3E%3Ccircle cx='7' cy='37' r='1'/%3E%3Ccircle cx='37' cy='37' r='1'/%3E%3Ccircle cx='22' cy='52' r='1'/%3E%3Ccircle cx='52' cy='52' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .dark .hero-visual {
+    background:
+      linear-gradient(
+        45deg,
+        hsl(var(--primary) / 0.1),
+        hsl(var(--secondary) / 0.1)
+      ),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23fff' fill-opacity='0.05'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3Ccircle cx='37' cy='7' r='1'/%3E%3Ccircle cx='22' cy='22' r='1'/%3E%3Ccircle cx='52' cy='22' r='1'/%3E%3Ccircle cx='7' cy='37' r='1'/%3E%3Ccircle cx='37' cy='37' r='1'/%3E%3Ccircle cx='22' cy='52' r='1'/%3E%3Ccircle cx='52' cy='52' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Hero text animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Animation utility classes */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in-left {
+    animation: fadeInLeft 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in-right {
+    animation: fadeInRight 0.8s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+  }
+
+  /* Animation delays */
+  .animate-delay-200 {
+    animation-delay: 0.2s;
+    opacity: 0;
+  }
+
+  .animate-delay-400 {
+    animation-delay: 0.4s;
+    opacity: 0;
+  }
+
+  .animate-delay-600 {
+    animation-delay: 0.6s;
+    opacity: 0;
+  }
+
+  .animate-delay-800 {
+    animation-delay: 0.8s;
+    opacity: 0;
   }
 }
 
@@ -259,4 +393,42 @@
   --toastify-color-transparent: oklch(1 0 0 / 0.7);
   --toastify-text-color-light: oklch(0.92 0.003 49.32);
   --toastify-text-color-dark: oklch(0.92 0.003 49.32);
+}
+
+/* Enhanced card styling for better visibility with background pattern */
+.card-enhanced {
+  backdrop-filter: blur(10px);
+  background: hsl(var(--card) / 0.95);
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 0 8px 32px hsl(var(--foreground) / 0.1);
+}
+
+.dark .card-enhanced {
+  background: hsl(var(--card) / 0.9);
+  border: 1px solid hsl(var(--border) / 0.3);
+}
+
+/* Animated gradient background for special sections */
+.gradient-bg {
+  background: linear-gradient(
+    -45deg,
+    hsl(var(--primary) / 0.1),
+    hsl(var(--secondary) / 0.1),
+    hsl(var(--accent) / 0.1),
+    hsl(var(--primary) / 0.05)
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
