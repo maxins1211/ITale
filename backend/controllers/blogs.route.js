@@ -1,6 +1,7 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
 const Comment = require("../models/comment");
+const User = require("../models/user");
 const middleware = require('../utils/middleware')
 const imagekit = require('../utils/imagekit')
 
@@ -64,23 +65,39 @@ blogsRouter.delete("/:id", middleware.tokenExtractor, middleware.userExtractor, 
     const user = request.user;
     const id = request.params.id
     const blog = await Blog.findById(id);
-    if (blog.user.toString() === user._id.toString()) {
+
+    if (!blog) {
+        return response.status(404).json({ error: 'Blog not found' })
+    }
+
+    if (blog.user.toString() === user._id.toString() || user.isAdmin) {
         // Delete all comments associated with this blog
         await Comment.deleteMany({ blog: id });
 
         await Blog.findByIdAndDelete(id);
         response.status(204).end()
-        user.blogs = user.blogs.filter(blogId => blogId.toString() !== id);
-        await user.save();
+
+        // Remove blog from user's blogs array
+        if (blog.user.toString() === user._id.toString()) {
+            user.blogs = user.blogs.filter(blogId => blogId.toString() !== id);
+            await user.save();
+        } else {
+            // If admin is deleting someone else's blog, remove it from the original author's blogs
+            const originalAuthor = await User.findById(blog.user);
+            if (originalAuthor) {
+                originalAuthor.blogs = originalAuthor.blogs.filter(blogId => blogId.toString() !== id);
+                await originalAuthor.save();
+            }
+        }
     }
     else {
-        response.status(401).json({ error: "this blog doesn't belong to this user" })
+        response.status(401).json({ error: "You don't have permission to delete this blog" })
     }
 })
 
 blogsRouter.put("/:id", middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
     const id = request.params.id
-    const { likes, content, title, coverImage } = request.body; // Now expects coverImage URL from frontend
+    const { likes, content, title, coverImage } = request.body;
     const authenticatedUser = request.user;
     const blog = await Blog.findById(id);
 
@@ -88,8 +105,8 @@ blogsRouter.put("/:id", middleware.tokenExtractor, middleware.userExtractor, asy
         return response.status(404).json({ error: 'Blog not found' })
     }
 
-    if (blog.user.toString() !== authenticatedUser._id.toString()) {
-        return response.status(403).json({ error: 'Access denied - you can only update your own blogs' })
+    if (blog.user.toString() !== authenticatedUser._id.toString() && !authenticatedUser.isAdmin) {
+        return response.status(403).json({ error: 'Access denied - you can only update your own blogs (or admin can edit any blog)' })
     }
 
     // Update blog fields
@@ -203,7 +220,8 @@ blogsRouter.delete("/comments/:commentId", middleware.tokenExtractor, middleware
         return response.status(404).json({ error: 'Comment not found' })
     }
 
-    if (comment.user.toString() !== user._id.toString()) {
+    // Allow deletion if user is the author OR user is an admin
+    if (comment.user.toString() !== user._id.toString() && !user.isAdmin) {
         return response.status(403).json({ error: 'You can only delete your own comments' })
     }
 

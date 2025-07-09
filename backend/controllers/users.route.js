@@ -2,6 +2,7 @@ const Blog = require("../models/blog");
 const User = require("../models/user")
 const usersRouter = require('express').Router()
 const bcrypt = require("bcryptjs")
+const middleware = require('../utils/middleware')
 
 usersRouter.post('/', async (request, response) => {
     const { username, name, password } = request.body
@@ -30,6 +31,31 @@ usersRouter.post('/', async (request, response) => {
 usersRouter.get('/', async (request, response) => {
     const users = await User.find({}).populate("blogs", { url: 1, title: 1, author: 1, id: 1 })
     response.json(users)
+})
+
+// Delete user 
+usersRouter.delete('/:id', middleware.tokenExtractor, middleware.userExtractor, async (request, response) => {
+    const currentUser = request.user
+    const targetUserId = request.params.id
+
+    if (!currentUser.isAdmin) {
+        return response.status(403).json({ error: 'Only admins can delete users' })
+    }
+
+    const targetUser = await User.findById(targetUserId)
+    if (!targetUser) {
+        return response.status(404).json({ error: 'User not found' })
+    }
+
+    if (targetUser._id.toString() === currentUser._id.toString()) {
+        return response.status(400).json({ error: 'Cannot delete yourself' })
+    }
+
+    await Blog.deleteMany({ user: targetUserId })
+
+    await User.findByIdAndDelete(targetUserId)
+
+    response.json({ message: `User ${targetUser.username} and all their blogs have been deleted` })
 })
 
 
