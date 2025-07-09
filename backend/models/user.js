@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
     },
     name: String,
     passwordHash: String,
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
     blogs: [
         {
             type: mongoose.Schema.Types.ObjectId,
