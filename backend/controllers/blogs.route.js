@@ -109,18 +109,20 @@ blogsRouter.put("/:id", middleware.tokenExtractor, middleware.userExtractor, asy
         return response.status(403).json({ error: 'Access denied - you can only update your own blogs (or admin can edit any blog)' })
     }
 
-    // Update blog fields
     const updatedBlog = await Blog.findByIdAndUpdate(id, {
         likes,
         content,
         title,
-        coverImage: coverImage || blog.coverImage // Use new URL or keep existing
-    }, { new: true })
+        coverImage: coverImage || blog.coverImage, // Use new URL or keep existing
+    }, {
+        new: true
+    })
         .populate("user", { username: 1, name: 1, id: 1 })
         .populate({
             path: "comments",
             populate: { path: "user", select: "username name id" }
         })
+
     response.status(200).json(updatedBlog)
 })
 
