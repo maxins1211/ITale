@@ -253,29 +253,37 @@ const SingleBlog = () => {
                 </div>
 
                 {/* Blog Author Controls */}
-                {user && user.username === blog.user.username && (
-                  <div className="flex space-x-3 pt-4 border-t">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/blogs/${id}/edit`)}
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit Blog
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={handleDeleteBlog}
-                      disabled={deleteBlogMutation.isPending}
-                    >
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      {deleteBlogMutation.isPending
-                        ? 'Deleting...'
-                        : 'Delete Blog'}
-                    </Button>
-                  </div>
-                )}
+                {user &&
+                  (user.username === blog.user.username || user.isAdmin) && (
+                    <div className="flex space-x-3 pt-4 border-t">
+                      {(user.username === blog.user.username ||
+                        user.isAdmin) && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate(`/blogs/${id}/edit`)}
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          {user.isAdmin && user.username !== blog.user.username
+                            ? 'Edit Blog (Admin)'
+                            : 'Edit Blog'}
+                        </Button>
+                      )}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleDeleteBlog}
+                        disabled={deleteBlogMutation.isPending}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {deleteBlogMutation.isPending
+                          ? 'Deleting...'
+                          : user.isAdmin && user.username !== blog.user.username
+                            ? 'Delete Blog (Admin)'
+                            : 'Delete Blog'}
+                      </Button>
+                    </div>
+                  )}
 
                 {/* Cover Image */}
                 {blog.coverImage && (
@@ -283,7 +291,7 @@ const SingleBlog = () => {
                     <img
                       src={blog.coverImage}
                       alt="Blog cover"
-                      className="w-full h-64 md:h-80 object-cover"
+                      className="w-full object-cover"
                     />
                   </div>
                 )}
@@ -344,7 +352,7 @@ const SingleBlog = () => {
                       onChange={(e) => setNewComment(e.target.value)}
                       placeholder="Write a comment..."
                       rows="3"
-                      className="w-full p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                      className="w-full p-3 border border-input bg-background text-foreground rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
                     />
                   </div>
                   <Button
@@ -403,7 +411,7 @@ const SingleBlog = () => {
                                 value={editContent}
                                 onChange={(e) => setEditContent(e.target.value)}
                                 rows="3"
-                                className="w-full p-3 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full p-3 border border-input bg-background text-foreground rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
                               />
                               <div className="flex space-x-2">
                                 <Button
@@ -454,18 +462,22 @@ const SingleBlog = () => {
                                   </div>
                                 </div>
                                 {user &&
-                                  user.username === comment.user.username && (
+                                  (user.username === comment.user.username ||
+                                    user.isAdmin) && (
                                     <div className="flex space-x-2">
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() =>
-                                          handleEditComment(comment)
-                                        }
-                                      >
-                                        <Edit className="w-3 h-3 mr-1" />
-                                        Edit
-                                      </Button>
+                                      {user.username ===
+                                        comment.user.username && (
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() =>
+                                            handleEditComment(comment)
+                                          }
+                                        >
+                                          <Edit className="w-3 h-3 mr-1" />
+                                          Edit
+                                        </Button>
+                                      )}
                                       <Button
                                         variant="ghost"
                                         size="sm"
@@ -480,7 +492,11 @@ const SingleBlog = () => {
                                         <Trash2 className="w-3 h-3 mr-1" />
                                         {deleteCommentMutation.isPending
                                           ? 'Deleting...'
-                                          : 'Delete'}
+                                          : user.isAdmin &&
+                                              user.username !==
+                                                comment.user.username
+                                            ? 'Delete (Admin)'
+                                            : 'Delete'}
                                       </Button>
                                     </div>
                                   )}
