@@ -7,7 +7,15 @@ import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { useSelector } from 'react-redux'
 import { useQuery } from '@tanstack/react-query'
-import { PenTool, TrendingUp, Clock, ChevronDown } from 'lucide-react'
+import {
+  PenTool,
+  TrendingUp,
+  Clock,
+  ChevronDown,
+  Code,
+  BookOpen,
+  Users,
+} from 'lucide-react'
 
 const Home = () => {
   const user = useSelector((state) => state.user)
@@ -30,12 +38,12 @@ const Home = () => {
     ? [...blogs].sort((a, b) => (b.likes || 0) - (a.likes || 0)).slice(0, 4)
     : []
 
-  // Get recent blogs sorted by date
+  // Get recent blogs sorted by creation date (not updated date)
   const recentBlogs = blogs
     ? [...blogs]
         .sort((a, b) => {
-          const dateA = new Date(a.createdAt || a.date || a.updatedAt)
-          const dateB = new Date(b.createdAt || b.date || b.updatedAt)
+          const dateA = new Date(a.createdAt || a.date)
+          const dateB = new Date(b.createdAt || b.date)
           return dateB - dateA
         })
         .slice(0, 8)
@@ -73,21 +81,21 @@ const Home = () => {
     <div className="min-h-screen bg-background">
       {user ? (
         /* Compact greeting section for logged-in users */
-        <section className="bg-gradient-to-r from-primary/10 to-secondary/10 py-4">
+        <section className="hero-section py-8">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
             <div>
-              <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
+              <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1 animate-fade-in-up">
                 Hello, <span className="text-primary">{user.name}</span>!
                 Welcome back!
               </h1>
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="text-sm text-muted-foreground mb-3 animate-fade-in-up animate-delay-200">
                 What's your story today? Please share and place your name on the
                 leaderboard!
               </p>
               <Button
                 onClick={handleCreateBlog}
                 size="default"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 transform hover:scale-[1.02]"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 transform hover:scale-[1.02] animate-fade-in-up animate-delay-400"
               >
                 <PenTool className="w-4 h-4 mr-2" />
                 Share Your Story
@@ -97,19 +105,19 @@ const Home = () => {
         </section>
       ) : (
         /* Full hero section for non-logged in users */
-        <section className="bg-gradient-to-r from-primary/10 to-secondary/10 h-screen flex items-center">
+        <section className="hero-section h-screen flex items-center relative overflow-hidden">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl w-full">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
               <div className="flex-1 text-center lg:text-left">
-                <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6">
+                <h1 className="text-4xl lg:text-6xl font-bold text-foreground mb-6 animate-fade-in-left">
                   Share Your <span className="text-primary">IT Story</span>
                 </h1>
-                <p className="text-xl text-muted-foreground mb-8 max-w-2xl">
+                <p className="text-xl text-muted-foreground mb-8 max-w-2xl animate-fade-in-left animate-delay-200">
                   Join our community and share your IT journey with fellow
                   developers. Read inspiring stories, learn from experiences,
                   and connect with like-minded professionals.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-left animate-delay-400">
                   <Button
                     onClick={handleCreateBlog}
                     size="lg"
@@ -132,14 +140,55 @@ const Home = () => {
                 </div>
               </div>
               <div className="flex-1 lg:flex justify-center hidden">
-                <div className="w-96 h-96 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center">
-                  <div className="text-8xl">💻</div>
+                <div className="hero-visual w-96 h-96 rounded-2xl flex items-center justify-center relative shadow-2xl animate-fade-in-right animate-delay-600">
+                  {/* Modern tech icons arrangement */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="grid grid-cols-3 gap-8 text-primary/60">
+                      <Code
+                        className="w-12 h-12 animate-pulse"
+                        style={{ animationDelay: '0s' }}
+                      />
+                      <BookOpen
+                        className="w-12 h-12 animate-pulse"
+                        style={{ animationDelay: '0.5s' }}
+                      />
+                      <Users
+                        className="w-12 h-12 animate-pulse"
+                        style={{ animationDelay: '1s' }}
+                      />
+                      <TrendingUp
+                        className="w-12 h-12 animate-pulse"
+                        style={{ animationDelay: '1.5s' }}
+                      />
+                      <PenTool
+                        className="w-16 h-16 text-primary animate-pulse"
+                        style={{ animationDelay: '2s' }}
+                      />
+                      <Clock
+                        className="w-12 h-12 animate-pulse"
+                        style={{ animationDelay: '2.5s' }}
+                      />
+                    </div>
+                  </div>
+                  {/* Floating elements */}
+                  <div
+                    className="absolute -top-4 -right-4 w-8 h-8 bg-primary/20 rounded-full animate-bounce"
+                    style={{ animationDelay: '0.5s' }}
+                  ></div>
+                  <div
+                    className="absolute -bottom-4 -left-4 w-6 h-6 bg-secondary/20 rounded-full animate-bounce"
+                    style={{ animationDelay: '1s' }}
+                  ></div>
+                  <div
+                    className="absolute top-1/2 -right-8 w-4 h-4 bg-accent/20 rounded-full animate-bounce"
+                    style={{ animationDelay: '1.5s' }}
+                  ></div>
                 </div>
               </div>
             </div>
 
             {/* Bouncing Arrow for non-logged in users */}
-            <div className="flex justify-center mt-12 lg:mt-16">
+            <div className="flex justify-center mt-12 lg:mt-16 animate-fade-in animate-delay-800">
               <button
                 onClick={() =>
                   document
@@ -164,7 +213,7 @@ const Home = () => {
       {/* Top Voted Blogs Section */}
       <section
         id="popular-stories"
-        className={`${user ? 'py-4' : 'py-16'} bg-muted/30`}
+        className={`${user ? 'py-8' : 'py-16'} gradient-bg`}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
           <div className="flex items-center gap-3 mb-8">
@@ -189,7 +238,7 @@ const Home = () => {
               </div>
             </div>
           ) : (
-            <Card className="p-8 text-center">
+            <Card className="card-enhanced p-8 text-center">
               <CardContent>
                 <p className="text-muted-foreground">
                   No stories available yet. Be the first to share your IT
@@ -202,7 +251,7 @@ const Home = () => {
       </section>
 
       {/* Recent Blogs Section */}
-      <section id="recent-blogs" className="py-16">
+      <section id="recent-blogs" className="py-16 bg-background/50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
           <div className="flex items-center gap-3 mb-8">
             <Clock className="w-6 h-6 text-primary" />
