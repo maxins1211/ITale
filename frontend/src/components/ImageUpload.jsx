@@ -14,6 +14,7 @@ const ImageUpload = ({ onUploadComplete, onUploadError }) => {
   const [progress, setProgress] = useState(0)
   const [uploading, setUploading] = useState(false)
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null)
+  const [selectedFileName, setSelectedFileName] = useState('')
   const fileInputRef = useRef(null)
   const abortController = new AbortController()
 
@@ -85,31 +86,64 @@ const ImageUpload = ({ onUploadComplete, onUploadError }) => {
     }
   }
 
-  const handleFileChange = () => {
+  const handleFileChange = (event) => {
     setUploadedImageUrl(null)
     setProgress(0)
+
+    // Update the button text to show selected file name
+    const file = event.target.files[0]
+    if (file) {
+      setSelectedFileName(file.name)
+    }
+  }
+
+  const handleButtonClick = () => {
+    fileInputRef.current?.click()
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center space-x-3">
-        <Input
-          type="file"
-          ref={fileInputRef}
-          accept="image/*"
-          onChange={handleFileChange}
-          disabled={uploading}
-          className="flex-1"
-        />
-        <Button
-          type="button"
-          onClick={handleUpload}
-          disabled={uploading}
-          variant="outline"
-          size="sm"
+      {/* Hidden file input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        accept="image/*"
+        onChange={handleFileChange}
+        disabled={uploading}
+        className="hidden"
+      />
+
+      {/* File selection and upload section */}
+      <div className="space-y-3">
+        {/* Custom file selection button - matches Input styling exactly */}
+        <div
+          onClick={handleButtonClick}
+          className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer hover:bg-accent/50 transition-colors ${
+            uploading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
         >
-          {uploading ? 'Uploading...' : 'Upload'}
-        </Button>
+          <span
+            className={
+              selectedFileName ? 'text-foreground' : 'text-muted-foreground'
+            }
+          >
+            {selectedFileName || 'Choose Image File'}
+          </span>
+        </div>
+
+        {/* Upload button - only show when file is selected */}
+        {selectedFileName && (
+          <Button
+            type="button"
+            onClick={handleUpload}
+            disabled={uploading}
+            variant="outline"
+            size="sm"
+            className="w-auto"
+          >
+            {uploading ? 'Uploading...' : 'Upload'}
+          </Button>
+        )}
       </div>
 
       {uploading && (
