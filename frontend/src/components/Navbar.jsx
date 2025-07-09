@@ -83,6 +83,16 @@ const Navbar = () => {
                 Recent Posts
               </button>
 
+              {/* Admin Panel Link */}
+              {user && user.isAdmin && (
+                <Link
+                  to="/admin"
+                  className="text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium"
+                >
+                  Admin Panel
+                </Link>
+              )}
+
               {/* Right side icons grouped closer together */}
               <div className="flex items-center space-x-1">
                 {/* Dark mode toggle */}
@@ -99,13 +109,19 @@ const Navbar = () => {
                     >
                       <LogOut className="h-4 w-4 mr-2" />
                     </Button>
-                    {/* User Avatar */}
-                    <div className="flex items-center px-1 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors">
+                    {/* User Avatar with Admin Badge */}
+                    <div className="flex items-center px-1 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary/70 transition-colors relative">
                       <Avatar className="h-8 w-8 ring-2 ring-primary/20 hover:ring-primary/40 transition-all">
                         <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold border border-primary/20">
                           {getInitials(user.name)}
                         </AvatarFallback>
                       </Avatar>
+                      {user.isAdmin && (
+                        <div
+                          className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full border border-white"
+                          title="Admin"
+                        ></div>
+                      )}
                     </div>
                   </>
                 ) : (
@@ -166,6 +182,15 @@ const Navbar = () => {
                 >
                   Recent Posts
                 </button>
+                {user && user.isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-left text-muted-foreground hover:text-foreground transition-colors duration-200 font-medium py-2"
+                  >
+                    Admin Panel
+                  </Link>
+                )}
                 {!user && (
                   <div className="pt-3 border-t border-border space-y-2">
                     <Link
