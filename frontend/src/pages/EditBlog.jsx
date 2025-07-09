@@ -28,7 +28,6 @@ const EditBlog = () => {
   const [newCoverImage, setNewCoverImage] = useState('')
   const [currentCoverImage, setCurrentCoverImage] = useState('')
 
-  // Fetch the blog to edit
   const {
     data: blog,
     isLoading,
@@ -39,7 +38,6 @@ const EditBlog = () => {
     enabled: !!id,
   })
 
-  // Fill form when blog data is loaded
   useEffect(() => {
     if (blog) {
       setTitle(blog.title || '')
@@ -54,8 +52,8 @@ const EditBlog = () => {
     return null
   }
 
-  // Redirect if not the blog owner
-  if (blog && user.username !== blog.user?.username) {
+  // Redirect if not the blog owner and not admin
+  if (blog && user.username !== blog.user?.username && !user.isAdmin) {
     navigate(`/blogs/${id}`)
     return null
   }
