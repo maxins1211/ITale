@@ -54,14 +54,16 @@ export const formatDateWithTooltip = (dateString) => {
 
 /**
  * Get a fallback date string for blogs without timestamps
- * This can be used when createdAt is not available
+ * This function prioritizes createdAt to show when the blog was originally created,
+ * not when it was last updated
  * @param {object} blog - The blog object
  * @returns {string} - A fallback date message
  */
 export const getBlogDateFallback = (blog) => {
-    // If blog has createdAt or updatedAt, use it
+    // Always prioritize createdAt - we want to show when the blog was originally created
     if (blog.createdAt) return blog.createdAt
-    if (blog.updatedAt) return blog.updatedAt
+
+    // Legacy fallback for old blogs that might use 'date' field
     if (blog.date) return blog.date
 
     // For existing blogs, we can try to extract date from ObjectId

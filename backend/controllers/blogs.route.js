@@ -17,7 +17,8 @@ blogsRouter.get("/", async (request, response) => {
         .populate({
             path: "comments",
             populate: { path: "user", select: "username name id" }
-        });
+        })
+        .sort({ createdAt: -1 }); // Sort by creation date, newest first
     response.json(blogs);
 });
 
